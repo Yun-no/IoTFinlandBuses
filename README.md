@@ -68,7 +68,7 @@ well.
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   git clone https://github.com/Yun-no/IoTFinlandBuses.git
    ```
 2. Build and run apps with Docker Compose
    ```sh
@@ -82,7 +82,8 @@ There are 3 Docker containers built to serve the application.
 * a Postgres container to store the telemetry
 * a python-slim container to create API on FASTAPI framework
 
-###Structure diagram
+### Structure diagram
+
 [![Structure diagram][task-diagram]]
 
 
@@ -114,7 +115,7 @@ ReDoc : http://127.0.0.1:8008/redoc
 <!-- Further discussion -->
 ## Further Discussions
 
-###database selection
+### database selection
 The original plan was to use Redis for better performance. 
 However instead of specific bus position lookup, flexible searching is needed.
 A key-value db can't serve well for that use case.
@@ -122,7 +123,7 @@ A key-value db can't serve well for that use case.
 PostgreSQL was then chosen for storing the date in a relational db.
 And with the ORM package ormar combined with pydantic, data mapping and validation are automated.
 
-###data storing logic
+### data storing logic
 The mqtt topic used is 
    ```sh
   /hfp/v2/journey/ongoing/vp/bus/#
@@ -140,7 +141,7 @@ A quick research through Google tells us there was 19.1 thousand units(bus and c
 So it's safe to assume that there will be less than 30k records built in database over the time. 
 We don't need to worry about oversize data storage with current solution (as historical data doesn't matter and get overwritten).
 
-###extra settings
+### extra settings
 Extra environment variables are specified in docker-compose file
 
 NUMBER_OF_RECORDS=100
@@ -152,7 +153,7 @@ VALID_TIME_RANGE=5
 The valid time range defines how long the API service would trace back to identify valid records, in minutes.
 That means a bus position data that is not updated within last 5 minutes will be considered as not valid, thus not included in the API response.
 
-###further works and optimizations
+### further works and optimizations
 * expand database to store more information from mqtt message
 * improve the API service: add authentication/authorization, introduce rate limiting/pagination, allow more query parameters, build different endpoints
 * implement gRPC for better internal communication performance
