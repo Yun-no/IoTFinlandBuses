@@ -120,7 +120,7 @@ The original plan was to use Redis for better performance.
 However instead of specific bus position lookup, flexible searching is needed.
 A key-value db can't serve well for that use case.
 
-PostgreSQL was then chosen for storing the date in a relational db.
+PostgreSQL was then chosen for storing the data in a relational db.
 And with the ORM package ormar combined with pydantic, data mapping and validation are automated.
 
 ### Data storing logic
