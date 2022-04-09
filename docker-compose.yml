@@ -1,0 +1,52 @@
+
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: api
+      dockerfile: Dockerfile_api
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn main:app --host 0.0.0.0'
+    volumes:
+      - .:/api
+    ports:
+      - 8008:8000
+    # NUMBER_OF_RECORDS to limit the max number of records returned by API
+    # VALID_TIME_RANGE to set the time range for valid records, from current time backward, in minutes
+    environment:
+      - DATABASE_URL=postgresql://abax_iot_bus:abax_iot_bus@db:5432/abax_iot_bus
+      - NUMBER_OF_RECORDS=100
+      - VALID_TIME_RANGE=5
+    depends_on:
+      - db
+  mqttclient:
+    build:
+      context: mqtt
+      dockerfile: Dockerfile_mqtt
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; python3 mqttclient.py'
+    volumes:
+      - .:/mqtt
+    environment:
+      - MQTT_BROKER_ADDRESS=mqtt.hsl.fi
+      - MQTT_BROKER_PORT=1883
+      - MQTT_BROKER_TOPIC=/hfp/v2/journey/ongoing/vp/bus/#
+      - DB_NAME=abax_iot_bus
+      - DB_USER=abax_iot_bus
+      - DB_PASSWORD=abax_iot_bus
+      - DB_HOST=db
+      - DB_PORT=5432
+    depends_on:
+      - db
+  db:
+    image: postgres:14-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=abax_iot_bus
+      - POSTGRES_PASSWORD=abax_iot_bus
+      - POSTGRES_DB=abax_iot_bus
+
+volumes:
+  postgres_data:
